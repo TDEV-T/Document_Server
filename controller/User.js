@@ -1,17 +1,17 @@
 const bcrypt = require("bcrypt");
-const TokenManager = require("./token/token_manager.js");
+const TokenManager = require("../functions/token/token_manager.js");
 const { db } = require("../config/db");
 const saltRound = 10;
 
-exports.check_authen = async (req,res) => {
-  let jwtStatus =  TokenManager.checkAuthentication(req);
+exports.check_authen = async (req, res) => {
+  let jwtStatus = TokenManager.checkAuthentication(req);
 
-  if(jwtStatus != false){
-    res.json({status:"success",message:jwtStatus});
-  }else{
-    res.json({status:"error",message:"Token Error"});
+  if (jwtStatus != false) {
+    res.json({ status: "success", message: jwtStatus });
+  } else {
+    res.json({ status: "error", message: "Token Error" });
   }
-}
+};
 
 exports.register = async (req, res) => {
   let check = "";
@@ -27,7 +27,7 @@ exports.register = async (req, res) => {
           bcrypt.genSalt(10, (err, salt) => {
             bcrypt.hash(information.password, salt, function (err, hash) {
               db.query(
-                "INSERT INTO users (username_user,password_user,fname_user,lname_user,address_user,tel_user,file_user) VALUES (?,?,?,?,?,?,?)",
+                "INSERT INTO users (username_user,password_user,fname_user,lname_user,address_user,tel_user) VALUES (?,?,?,?,?,?)",
                 [
                   information.username,
                   hash,
@@ -35,7 +35,6 @@ exports.register = async (req, res) => {
                   information.lname,
                   information.address,
                   information.tel,
-                  information.profile,
                 ],
                 (err, result) => {
                   if (err) {
@@ -63,7 +62,7 @@ exports.login = async (req, res) => {
   try {
     let information = req.body;
     db.query(
-      "SELECT * FROM users WHERE username_user = ? ",
+      "SELECT * FROM users,types WHERE username_user = ? AND type_user = id_tu",
       [information.username],
       (err, users) => {
         if (err) {
@@ -78,8 +77,15 @@ exports.login = async (req, res) => {
             users[0].password_user,
             (err, isLogin) => {
               if (isLogin) {
-                let token = TokenManager.getGenerateToken({username:users[0].username_user});
-                res.json({ status: "success", message: "Login Success" ,token});
+                let token = TokenManager.getGenerateToken({
+                  username: users[0].username_user,
+                });
+                res.json({
+                  status: "success",
+                  message: "Login Success",
+                  role: users[0].name_tu,
+                  token,
+                });
               } else {
                 console.log(information.password);
                 console.log(users[0].password_user);

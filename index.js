@@ -3,6 +3,7 @@ const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const { readdirSync } = require("fs");
+const multer = require('multer');
 
 //middle ware
 app.use(bodyParser.json({limit:'20mb'}));
