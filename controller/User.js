@@ -1,17 +1,6 @@
 const bcrypt = require("bcrypt");
 const TokenManager = require("../functions/token/token_manager.js");
 const { db } = require("../config/db");
-const saltRound = 10;
-
-exports.check_authen = async (req, res) => {
-  let jwtStatus = TokenManager.checkAuthentication(req);
-
-  if (jwtStatus != false) {
-    res.json({ status: "success", message: jwtStatus });
-  } else {
-    res.json({ status: "error", message: "Token Error" });
-  }
-};
 
 exports.register = async (req, res) => {
   let check = "";
@@ -78,12 +67,18 @@ exports.login = async (req, res) => {
             (err, isLogin) => {
               if (isLogin) {
                 let token = TokenManager.getGenerateToken({
-                  username: users[0].username_user,
+                  user: {
+                    username: users[0].username_user,
+                    role: users[0].name_tu,
+                  },
                 });
                 res.json({
                   status: "success",
                   message: "Login Success",
-                  role: users[0].name_tu,
+                  user: {
+                    username: users[0].username_user,
+                    role: users[0].name_tu,
+                  },
                   token,
                 });
               } else {
@@ -99,5 +94,25 @@ exports.login = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).send("Server Error!");
+  }
+};
+
+exports.currentUser = async (req, res) => {
+  try {
+    console.log(req.user);
+    db.query(
+      "SELECT username_user,name_tu FROM users,types WHERE username_user = ? AND type_user = id_tu",
+      [req.user.username],
+      (err, user) => {
+        if (err) {
+          user.json({ status: "error", message: "User not defined" });
+          return;
+        } else {
+          res.send(user);
+        }
+      }
+    );
+  } catch (err) {
+    console.log(err);
   }
 };
