@@ -68,6 +68,7 @@ exports.login = async (req, res) => {
               if (isLogin) {
                 let token = TokenManager.getGenerateToken({
                   user: {
+                    id: users[0].id_user,
                     username: users[0].username_user,
                     role: users[0].name_tu,
                   },
@@ -76,6 +77,7 @@ exports.login = async (req, res) => {
                   status: "success",
                   message: "Login Success",
                   user: {
+                    id: users[0].id_user,
                     username: users[0].username_user,
                     role: users[0].name_tu,
                   },
@@ -101,7 +103,7 @@ exports.currentUser = async (req, res) => {
   try {
     console.log(req.user);
     db.query(
-      "SELECT username_user,name_tu FROM users,types WHERE username_user = ? AND type_user = id_tu",
+      "SELECT id_user,username_user,name_tu FROM users,types WHERE username_user = ? AND type_user = id_tu",
       [req.user.username],
       (err, user) => {
         if (err) {
