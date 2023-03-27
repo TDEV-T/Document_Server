@@ -10,6 +10,7 @@ app.use(bodyParser.json({limit:'20mb'}));
 app.use(cors());
 app.use(express.json());
 
+
 readdirSync('./routes').map((r)=> app.use('/api', require('./routes/'+r)))
 
 app.listen(3456, (err) => {

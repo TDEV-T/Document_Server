@@ -41,12 +41,23 @@ exports.create_document = async (req, res) => {
       (err, result) => {
         if (err) {
           res.json({ status: "error", message: err });
+          return;
         } else {
           idReport = result.insertId;
 
-          for (let i = 0; i < data.part.length; i++) {
-            console.log(data.part[i]);
+          // for (let i = 0; i < data.part.length; i++) {
+          //   console.log(data.part);
+          // }
+          let resultPart = JSON.parse(data.part);
+          for (let i = 0; i < resultPart.length; i++) {
+            const obj = resultPart[i];
+            const query = `INSERT INTO participant (re_pa, name_pa,value_pa) VALUES ('${idReport}','${obj.name}','${obj.count}')`;
+            db.query(query, (err, result) => {
+              if(err) throw err;
+            });
           }
+
+          res.json({status:"success",message:"Create Success !"});
         }
       }
     );
@@ -65,7 +76,6 @@ exports.get_document = async (req, res) => {
         if (err) {
           res.json({ status: "error", message: err });
         } else {
-          console.log(result);
           res.send(result);
         }
       }
