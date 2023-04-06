@@ -76,7 +76,7 @@ exports.create_document = async (req, res) => {
 exports.get_document = async (req, res) => {
   try {
     db.query(
-      "SELECT * FROM reports WHERE own_re = ? ",
+      "SELECT `id_re`,`activity_re`, `project_re`, `another_re`, `dev_re`, `manage_re`, `plans_re`, `technical_re`, `college_re`, `group_re`, `work_re`, `dept_re`, `location_re`, `name_re`, `content_re`, `benefit_re`, `comment_re`, `own_re`, `img_re`, `result_re`, `statusmade_re`, `namemade_re`, `deptmade_re`, DATE_FORMAT(date_re, '%Y-%m-%d') AS date_re, DATE_FORMAT(start_re, '%Y-%m-%d') AS start_re FROM reports WHERE own_re = ? ",
       [req.body.userid],
       (err, result) => {
         if (err) {
